@@ -1,3 +1,11 @@
 beautifulsoup4
 joblib
 tensorflow
+numpy 
+matplotlib.pyplot as plt
+sqlite3
+bcrypt
+random
+streamlit as st
+pandas as pd
+requests
