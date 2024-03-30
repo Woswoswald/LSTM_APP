@@ -2,7 +2,7 @@ beautifulsoup4
 joblib
 tensorflow
 numpy 
-matplotlib.pyplot
+matplotlib
 sqlite3
 bcrypt
 random
