@@ -3,7 +3,6 @@ joblib
 tensorflow
 numpy 
 matplotlib
-sqlite3
 bcrypt
 random
 streamlit
