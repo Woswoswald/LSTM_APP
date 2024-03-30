@@ -1,5 +1,5 @@
-beautifulsoup4
-joblib
+beautifulsoup4==4.10.0
+joblib==1.1.0
 tensorflow
 numpy 
 matplotlib
