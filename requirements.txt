@@ -7,4 +7,3 @@ bcrypt
 streamlit
 pandas 
 requests
-sklearn
