@@ -85,7 +85,7 @@ def show_application():
         st.success("Database cleared successfully!")
 
     # Input for start and end dates using date picker
-    start_date_input = st.date_input("Select the start date:")
+    start_date_input = st.date_input("Select the date range for input values:")
 
     # Automatically set the end date to the Sunday of the same week as the chosen Monday
     end_date_input = start_date_input + timedelta(days=(6 - start_date_input.weekday()))
