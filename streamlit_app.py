@@ -47,7 +47,7 @@ c_predictions.execute('''CREATE TABLE IF NOT EXISTS predictions
              (date_range TEXT, predictions TEXT)''')
 
 # Function to insert predictions into the database
-def insert_predictions(date_range, predictions, real_values):
+def insert_predictions(date_range, predictions):
     predictions_str = ', '.join([str(round(pred)) for pred in predictions])
     c_predictions.execute("INSERT INTO predictions (date_range, predictions) VALUES (?, ?)", (date_range, predictions_str))
     conn_predictions.commit()
