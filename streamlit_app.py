@@ -241,7 +241,7 @@ def show_application():
 
     # Display data in a table format
     if data:
-        df = pd.DataFrame(data, columns=['Date Range', 'Predictions', 'Real Values'])
+        df = pd.DataFrame(data, columns=['Date Range', 'Predictions for the next week', 'Real Values of the last week'])
         st.write(df)
     else:
         st.write("No data available in the predictions database.")
