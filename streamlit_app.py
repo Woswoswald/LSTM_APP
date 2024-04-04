@@ -19,17 +19,6 @@ c_users = conn_users.cursor()
 c_users.execute('''CREATE TABLE IF NOT EXISTS users
              (username TEXT PRIMARY KEY, password TEXT)''')
 
-def generate_variations(sequence, max_variation=5):
-    """
-    Generate variations for each digit in the sequence.
-    Each digit in the sequence will be varied by a random value between -max_variation and +max_variation.
-    """
-    variations = []
-    for digit in sequence:
-        variation = digit + random.randint(-max_variation, max_variation)
-        variations.append(variation)
-    return variations
-
 # Function to insert user credentials into the database
 def insert_user(username, password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -55,13 +44,12 @@ c_predictions = conn_predictions.cursor()
 
 # Create a table to store predictions
 c_predictions.execute('''CREATE TABLE IF NOT EXISTS predictions
-             (date_range TEXT, predictions TEXT, real_values TEXT)''')
+             (date_range TEXT, predictions TEXT)''')
 
 # Function to insert predictions into the database
 def insert_predictions(date_range, predictions, real_values):
     predictions_str = ', '.join([str(round(pred)) for pred in predictions])
-    real_values_str = ', '.join([str(value) for value in real_values])
-    c_predictions.execute("INSERT INTO predictions (date_range, predictions, real_values) VALUES (?, ?, ?)", (date_range, predictions_str, real_values_str))
+    c_predictions.execute("INSERT INTO predictions (date_range, predictions) VALUES (?, ?)", (date_range, predictions_str))
     conn_predictions.commit()
 
 # Function to fetch data from the predictions database
@@ -86,9 +74,7 @@ def main():
         st.error("Invalid username or password")
 
 def show_application():
-    st.title("Prediction App")
-
-    data = get_predictions()
+    st.title("Indicator Sequence App")
 
     # Button to clear the database
     if st.button("Clear Database"):
@@ -113,10 +99,6 @@ def show_application():
     else:
         # Button to trigger the analysis
         if st.button("Generate Sequences"):
-            # Generate random real values
-            original_sequence = [1315, 1339, 1339, 1336, 1306, 1182, 1179]
-            variations = generate_variations(original_sequence)
-            real_values = variations
 
             # Create columns for better layout
             col1, col2, col3, col4 = st.columns(4)
@@ -230,9 +212,6 @@ def show_application():
 
         # Generate and display the plot of predicted values (j1 to j6)
             st.subheader("Predicted Values:")
-
-            plt.figure()
-
             days_range = pd.date_range(start=start_date_input, periods=7)
 
             predictions = [J1_orig, J2_orig, J3_orig, J4_orig, J5_orig, J6_orig, J7_orig]
@@ -241,7 +220,7 @@ def show_application():
 
             predictions = [pred[0][0] for pred in predictions]
 
-            plt.plot(predictions, label='Precited Values For The Next Week')
+            plt.plot(predictions, label='Predicted Values')
 
             plt.xlabel('Time')
             plt.ylabel('Value')
@@ -249,26 +228,7 @@ def show_application():
 
             st.pyplot(plt)
 
-            insert_predictions(f"{start_date_input.strftime('%Y-%m-%d')} to {end_date_input.strftime('%Y-%m-%d')}", predictions, real_values)
-
-            st.subheader("Last week's values:")
-
-            plt.figure()
-
-            if len(data) > 1:
-                prev_row_predictions = [float(val) for val in data[-2][1].split(',')]
-                current_row_real_values = [float(val) for val in data[-1][2].split(',')]
-
-                plt.plot(prev_row_predictions, label="Predicted")
-                plt.plot(current_row_real_values, label="Real")
-                plt.xlabel('Day')
-                plt.ylabel('Value')
-                plt.legend()
-                st.pyplot(plt)
-            else:
-                st.write("Insufficient data to plot. Please make more predictions.")
-
-
+            insert_predictions(f"{start_date_input.strftime('%Y-%m-%d')} to {end_date_input.strftime('%Y-%m-%d')}", predictions)
 
 # Fetch data from the database and display it
     st.subheader("Predictions Database:")
@@ -278,7 +238,7 @@ def show_application():
 
     # Display data in a table format
     if data:
-        df = pd.DataFrame(data, columns=['Date Range', 'Predictions For The Next Week', 'Real Values Of The Last Week'])
+        df = pd.DataFrame(data, columns=['Date Range', 'Predictions'])
         st.write(df)
     else:
         st.write("No data available in the predictions database.")
