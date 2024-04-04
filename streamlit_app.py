@@ -86,7 +86,7 @@ def main():
         st.error("Invalid username or password")
 
 def show_application():
-    st.title("Indicator Sequence App")
+    st.title("Prediction App")
 
     data = get_predictions()
 
