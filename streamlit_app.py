@@ -44,12 +44,13 @@ c_predictions = conn_predictions.cursor()
 
 # Create a table to store predictions
 c_predictions.execute('''CREATE TABLE IF NOT EXISTS predictions
-             (date_range TEXT, predictions TEXT)''')
+             (date_range TEXT, predictions TEXT, real_values TEXT)''')
 
 # Function to insert predictions into the database
-def insert_predictions(date_range, predictions):
+def insert_predictions(date_range, predictions, real_values):
     predictions_str = ', '.join([str(round(pred)) for pred in predictions])
-    c_predictions.execute("INSERT INTO predictions (date_range, predictions) VALUES (?, ?)", (date_range, predictions_str))
+    real_values_str = ', '.join([str(value) for value in real_values])
+    c_predictions.execute("INSERT INTO predictions (date_range, predictions, real_values) VALUES (?, ?, ?)", (date_range, predictions_str, real_values_str))
     conn_predictions.commit()
 
 # Function to fetch data from the predictions database
@@ -99,6 +100,8 @@ def show_application():
     else:
         # Button to trigger the analysis
         if st.button("Generate Sequences"):
+            # Generate random real values
+            real_values = [random.randint(1100, 1500) for _ in range(7)]
 
             # Create columns for better layout
             col1, col2, col3, col4 = st.columns(4)
@@ -228,7 +231,7 @@ def show_application():
 
             st.pyplot(plt)
 
-            insert_predictions(f"{start_date_input.strftime('%Y-%m-%d')} to {end_date_input.strftime('%Y-%m-%d')}", predictions)
+            insert_predictions(f"{start_date_input.strftime('%Y-%m-%d')} to {end_date_input.strftime('%Y-%m-%d')}", predictions, real_values)
 
 # Fetch data from the database and display it
     st.subheader("Predictions Database:")
@@ -238,7 +241,7 @@ def show_application():
 
     # Display data in a table format
     if data:
-        df = pd.DataFrame(data, columns=['Date Range', 'Predictions'])
+        df = pd.DataFrame(data, columns=['Date Range', 'Predictions', 'Real Values'])
         st.write(df)
     else:
         st.write("No data available in the predictions database.")
@@ -395,5 +398,3 @@ def get_sequence_for_weather(start_date_input, end_date_input):
 
 if __name__ == "__main__":
     main()
-
-
