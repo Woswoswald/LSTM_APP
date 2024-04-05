@@ -2,13 +2,6 @@ from unittest import TestCase, main
 from pathlib import Path
 import os
 
-import streamlit as st 
-from sqlalchemy import create_engine
-from sqlalchemy.engine.base import Engine
-
-import database
-import settings
-
 class TestFiles(TestCase):
     # Vérifie si ces fichiers sont dans le dossier racine
     def test_root_files(self):
