@@ -3,7 +3,6 @@ from pathlib import Path
 import os
 
 import streamlit as st 
-from ultralytics import YOLO
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 
