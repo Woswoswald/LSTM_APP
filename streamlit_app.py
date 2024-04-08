@@ -11,8 +11,23 @@ import streamlit as st
 import pandas as pd
 import requests
 import streamlit as st
+import os
+import sendgrid
+from sendgrid.helpers.mail import Mail
 
-st.metric(label="Temperature", value="70 °F", delta="1.2 °F")
+# Function to send email notification using SendGrid
+def send_email_notification(email):
+    sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
+    from_email = "your_email@example.com"
+    to_email = "oswaldslava@gmail.com"
+    subject = "User Logged In"
+    body = f"User with email {email} logged in to the application."
+    message = Mail(from_email, to_email, subject, body)
+    try:
+        response = sg.send(message)
+        print("Email notification sent successfully!")
+    except Exception as e:
+        print(f"Failed to send email notification: {e}")
 
 # Connect to the SQLite database for user credentials
 conn_users = sqlite3.connect('users.db')
@@ -36,6 +51,7 @@ def authenticate_user(username, password):
 
     # Check if the provided credentials match the hardcoded credentials
     if username == hardcoded_username and password == hardcoded_password:
+        send_email_notification(username)  # Notify on successful login
         return True
     else:
         return False
@@ -400,4 +416,5 @@ def get_sequence_for_weather(start_date_input, end_date_input):
         return f"Failed to retrieve the webpage. Status code: {response.status_code}"
 
 if __name__ == "__main__":
+    main()
     main()
