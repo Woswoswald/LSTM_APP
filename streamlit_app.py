@@ -11,23 +11,6 @@ import streamlit as st
 import pandas as pd
 import requests
 import streamlit as st
-import os
-import sendgrid
-from sendgrid.helpers.mail import Mail
-
-# Function to send email notification using SendGrid
-def send_email_notification(email):
-    sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
-    from_email = "your_email@example.com"
-    to_email = "oswaldslava@gmail.com"
-    subject = "User Logged In"
-    body = f"User with email {email} logged in to the application."
-    message = Mail(from_email, to_email, subject, body)
-    try:
-        response = sg.send(message)
-        print("Email notification sent successfully!")
-    except Exception as e:
-        print(f"Failed to send email notification: {e}")
 
 # Connect to the SQLite database for user credentials
 conn_users = sqlite3.connect('users.db')
@@ -40,7 +23,6 @@ c_users.execute('''CREATE TABLE IF NOT EXISTS users
 # Function to insert user credentials into the database
 def insert_user(username, password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    c_users.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
     conn_users.commit()
 
 # Function to check user credentials (hardcoded for a single user)
