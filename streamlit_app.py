@@ -33,7 +33,6 @@ def authenticate_user(username, password):
 
     # Check if the provided credentials match the hardcoded credentials
     if username == hardcoded_username and password == hardcoded_password:
-        send_email_notification(username)  # Notify on successful login
         return True
     else:
         return False
