@@ -12,6 +12,8 @@ import pandas as pd
 import requests
 import streamlit as st
 
+st.metric(label="Temperature", value="70 °F", delta="1.2 °F")
+
 # Connect to the SQLite database for user credentials
 conn_users = sqlite3.connect('users.db')
 c_users = conn_users.cursor()
@@ -23,6 +25,7 @@ c_users.execute('''CREATE TABLE IF NOT EXISTS users
 # Function to insert user credentials into the database
 def insert_user(username, password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    c_users.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
     conn_users.commit()
 
 # Function to check user credentials (hardcoded for a single user)
@@ -397,5 +400,4 @@ def get_sequence_for_weather(start_date_input, end_date_input):
         return f"Failed to retrieve the webpage. Status code: {response.status_code}"
 
 if __name__ == "__main__":
-    main()
     main()
