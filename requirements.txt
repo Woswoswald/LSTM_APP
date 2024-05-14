@@ -7,3 +7,4 @@ altair<5.0.0
 streamlit<1.0.0
 click<8.0.0
 matplotlib==3.4.3
+bcrypt==3.2.0
