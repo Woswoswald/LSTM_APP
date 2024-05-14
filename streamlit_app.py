@@ -304,7 +304,7 @@ def get_sequence_for_indicator(indicator, start_date_input, end_date_input):
     
 def get_sequence_for_HOS_PRES_TOTAL(start_date_input, end_date_input):
     # Load the data from HOS_PRES_TOTAL_NEW.csv
-    hos_pres_total_data = pd.read_csv("HOS_PRES_TOTAL_NEW.csv")
+    hos_pres_total_data = pd.read_csv("HOS_PRES_TOTAL_NEW.csv") 
 
     # Convert DateCreateIndicHopTension to datetime
     hos_pres_total_data['DateCreateIndicHopTension'] = pd.to_datetime(hos_pres_total_data['DateCreateIndicHopTension']).dt.date
