@@ -6,3 +6,4 @@ protobuf==3.19.6
 altair<5.0.0
 streamlit<1.0.0
 click<8.0.0
+matplotlib==3.4.3
