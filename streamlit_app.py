@@ -12,8 +12,6 @@ import pandas as pd
 import requests
 import streamlit as st
 
-st.metric(label="Temperature", value="70 °F", delta="1.2 °F")
-
 # Connect to the SQLite database for user credentials
 conn_users = sqlite3.connect('users.db')
 c_users = conn_users.cursor()
