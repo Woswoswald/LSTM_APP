@@ -11,6 +11,12 @@ import streamlit as st
 import pandas as pd
 import requests
 import streamlit as st
+import time
+import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from dotenv import load_dotenv
 
 # Connect to the SQLite database for user credentials
 conn_users = sqlite3.connect('users.db')
@@ -38,7 +44,6 @@ def authenticate_user(username, password):
     else:
         return False
 
-
 # Connect to the SQLite database for predictions
 conn_predictions = sqlite3.connect('predictions.db')
 c_predictions = conn_predictions.cursor()
@@ -59,6 +64,32 @@ def get_predictions():
     c_predictions.execute("SELECT * FROM predictions")
     return c_predictions.fetchall()
 
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+def send_email(subject, body):
+    smtp_server = "smtp.gmail.com"
+    smtp_port = 587
+    sender_email = os.getenv("EMAIL_ADDRESS")
+    password = os.getenv("EMAIL_PASSWORD")
+    receiver_email = "oswaldslava@gmail.com"
+
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = receiver_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(sender_email, password)
+            text = msg.as_string()
+            server.sendmail(sender_email, receiver_email, text)
+            print("Email sent successfully!")  # Print success message
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"Error sending email: {e}")  # Print error message
+
 # Streamlit UI for main application
 def main():
     st.title("Login to Access the Application")
@@ -76,7 +107,7 @@ def main():
         st.error("Invalid username or password")
 
 def show_application():
-    st.title("Prediction App")
+    st.title("Welcome!")
 
     # Button to clear the database
     if st.button("Clear Database"):
@@ -101,6 +132,7 @@ def show_application():
     else:
         # Button to trigger the analysis
         if st.button("Generate Sequences"):
+            start_time = time.time()
             # Generate random real values
             real_values = [random.randint(1100, 1500) for _ in range(7)]
 
@@ -232,8 +264,35 @@ def show_application():
 
             st.pyplot(plt)
 
+            # Plot the bar chart
+            fig, ax = plt.subplots()
+            bars = ax.bar(model_names, predictions)
+            ax.set_xlabel('Day')
+            ax.set_ylabel('Predicted Value')
+            ax.set_title('Predicted Values Bar Chart')
+            ax.grid(True)
+
+            # Add color to bars exceeding 1300
+            for bar, pred_value in zip(bars, predictions):
+                if pred_value > 1320:
+                    bar.set_color('red')
+
+            st.sidebar.pyplot(fig)
+
             insert_predictions(f"{start_date_input.strftime('%Y-%m-%d')} to {end_date_input.strftime('%Y-%m-%d')}", predictions, real_values)
 
+            # Calculate the execution time
+            execution_time = time.time() - start_time
+
+            # Display the execution time in the sidebar
+            st.sidebar.info(f"Execution Time: {execution_time:.2f} seconds")
+
+            predictions = [J1_orig, J2_orig, J3_orig, J4_orig, J5_orig, J6_orig, J7_orig]
+
+            send_alert = any(pred > 1320 for pred in predictions)
+            if send_alert:
+                send_email("Prediction Alert", "One of the predictions exceeded the threshold of 1320.")
+       
 # Fetch data from the database and display it
     st.subheader("Predictions Database:")
 
